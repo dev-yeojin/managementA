@@ -1,0 +1,16 @@
+# [Spring 설정]
+spring:
+  profiles: 
+    active: dev
+  mvc:
+    view:
+      prefix: /WEB-INF/view/
+      suffix: .jsp
+  
+# [Context 설정]
+server:
+  port: 8080
+  contextPath: /
+  jsp-servlet:
+    init-parameters:
+      development: true
