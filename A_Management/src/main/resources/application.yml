@@ -6,6 +6,11 @@ spring:
     view:
       prefix: /WEB-INF/view/
       suffix: .jsp
+  datasource:
+        url: jdbc:mysql://127.0.0.1:3306/mservice?useUnicode=true&characterEncoding=UTF-8
+        username: root 
+        password: 1234
+        driver-class-name: com.mysql.jdbc.Driver    
   
 # [Context 설정]
 server:
@@ -14,3 +19,4 @@ server:
   jsp-servlet:
     init-parameters:
       development: true
+

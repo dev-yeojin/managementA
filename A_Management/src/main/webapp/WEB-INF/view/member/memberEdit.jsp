@@ -39,7 +39,9 @@
 									<div class="form-group">
 										<input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="이름" value="">
 									</div>
-									
+									<div class="form-group">
+										<input type="hidden" name="auth" id="auth" tabindex="1" class="form-control" value="${auth}">
+									</div>
 									<div class="form-group">
 										<div class="row">
 											<div class="col-sm-6 col-sm-offset-3">

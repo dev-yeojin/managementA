@@ -11,6 +11,6 @@
 
 <button onclick="location.href='/member/update'">회원정보 수정</button>
 <button onclick="location.href='/logout'">로그아웃</button>
-
+<button onclick="location.href='/member/memberList'">회원정보 보기</button>
 </body>
 </html>

@@ -40,9 +40,6 @@
 										<input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="User Name" value="">
 									</div>
 									<div class="form-group">
-										<input type="number" name="auth" id="auth" tabindex="1" class="form-control" placeholder="User Auth" value="">
-									</div>
-									<div class="form-group">
 										<div class="row">
 											<div class="col-sm-6 col-sm-offset-3">
 												<input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">
