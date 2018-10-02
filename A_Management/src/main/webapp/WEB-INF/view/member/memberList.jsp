@@ -16,20 +16,23 @@
 </head>
 <body>
 <script type="text/javascript">
-	$(function(){
+	 $(function(){
 		var memberList = ${memberList};
 		$.each(memberList, function() {
+
 			$('#memberTable tbody').append(
 					"<tr><td>"
 					+ this.userId + "</td><td>" 
 					+ this.name + "</td><td>"
-					+ this.auth + "</td><td>"
-					//"<select name='auth'><option value='1'>1</option> <option value='2'>2</option><option value='3'>3</option></select>"
+					//+ this.auth + "</td><td>"
+					+ "<select name='auth' id='auth'><option value='1'>1</option> <option value='2'>2</option><option value='3'>3</option></select>"
+				 	+ "<button onclick=""></button>"
+					+ "<a href=\"/member/auth"
 					+"</td><td>"
 					+ "<a class='fa fa-trash' href=\"/member/delete?userId=" + this.userId + "\"></a></td></tr>"
 			);
 		}); 
-	});
+	}); 
 </script>
 
 	<div class="space100"></div>
@@ -56,12 +59,12 @@
 	                        <th>권한 </th>
 	                        <!-- <th>권한 수정</th> -->
 	                        <th>삭제</th>
+	                        <th>권한 수정</th>
 	                    </tr> 
 	                  </thead>
 	           
 	                  <tbody class="align-center">
-	                  
-	                   </tbody>
+	                  </tbody>
 	                </table>
 	            
 	              </div>

@@ -181,4 +181,39 @@ public class MemberController {
 		
 	}
 
+	@RequestMapping(value="/member/userAuth",method =RequestMethod.PUT)
+	public String updateUserAuth(HttpServletRequest request){
+		HttpResponse response = null;
+		Map paramMap = new HashMap<>();
+		paramMap.put("userId", request.getParameter("userId"));
+		paramMap.put("auth", Integer.parseInt(request.getParameter("auth")));
+		int statusCode = 0;
+		
+		HttpSession session = request.getSession();
+		Member member = (Member)session.getAttribute("member");
+		
+		if(member.getAuth() == 1){
+			try {
+				HttpPut put = new HttpPut(serverUrl + "/member/userAuth");
+				List<NameValuePair> nvps = memberService.convertParam(paramMap);
+				put.setEntity(new UrlEncodedFormEntity(nvps,"UTF-8"));
+				
+				response = httpClient.execute(put);
+				statusCode = response.getStatusLine().getStatusCode();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				HttpClientUtils.closeQuietly(response);
+			}
+			
+			if(statusCode == 200){
+				return "redirect:/member/memberList";
+			}else{
+				return "redirect:/error";
+			}
+		}else{
+			return "redirect:/noAccess";
+		}
+	}
 }
