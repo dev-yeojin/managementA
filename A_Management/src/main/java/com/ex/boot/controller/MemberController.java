@@ -9,10 +9,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -28,23 +26,26 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ex.boot.service.MemberService;
 import com.ex.boot.vo.Member;
+import com.ex.boot.vo.ResponseMsg;
+import com.google.gson.Gson;
 
 @Controller
 public class MemberController {
 	//member list , 삭제 권한은 admin만 
-	@Autowired
+		@Autowired
 	private MemberService memberService;
 	
 	@Autowired
 	@Qualifier("httpClient")
 	HttpClient httpClient;
-	
+
 	private static String serverUrl = "http://localhost:8181";
 	
 	//memberList select
 	@ResponseBody
 	@RequestMapping(value="/member/memberList",method=RequestMethod.GET)
 	public ModelAndView getMemberList(HttpServletRequest request){
+		Gson gson = new Gson();
 		HttpSession session = request.getSession();
 		Member member = (Member)session.getAttribute("member");
 		ModelAndView mv = new ModelAndView();
@@ -54,10 +55,18 @@ public class MemberController {
 				try {
 				HttpGet get = new HttpGet(serverUrl + "/member/memberList");
 				response = httpClient.execute(get);
-				String json = EntityUtils.toString(response.getEntity());
-				List<Member> memberList = memberService.jsonToMemberList(json);
-				mv.addObject("memberList",json);
-				mv.setViewName("/member/memberList");
+				
+				ResponseMsg responseMsg = memberService.jsonToResponseMsg(EntityUtils.toString(response.getEntity()));
+				String resultMsg = responseMsg.getMsg();
+				
+				if(resultMsg.equals("SUCCESS")){
+					List<Member> memberList = responseMsg.getMemberList();
+					mv.addObject("memberList",gson.toJson(memberList));
+					mv.setViewName("/member/memberList");
+				}else{
+					mv.setViewName("redirect:/error");
+				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}finally {
@@ -76,31 +85,34 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value="/member/create",method=RequestMethod.POST)
-	public String createMember(HttpServletRequest request){
+	public ModelAndView createMember(HttpServletRequest request){
+		ModelAndView mv = new ModelAndView();
 		HttpResponse response = null;
 		Map paramMap = new HashMap<>();
 		paramMap.put("userId", request.getParameter("userId"));
 		paramMap.put("pwd", request.getParameter("pwd"));
 		paramMap.put("name", request.getParameter("name"));
-		int statusCode = 0;
 		
 		try {
 			HttpPost post = new HttpPost(serverUrl + "/member");
 			List<NameValuePair> nvps = memberService.convertParam(paramMap);
 			post.setEntity(new UrlEncodedFormEntity(nvps,"UTF-8"));
 			response = httpClient.execute(post);
-			statusCode = response.getStatusLine().getStatusCode();
+			ResponseMsg responseMsg = memberService.jsonToResponseMsg(EntityUtils.toString(response.getEntity()));
+			String resultMsg = responseMsg.getMsg();
+		
+			if(resultMsg.equals("SUCCESS")){
+				mv.addObject("msg", "가입되었습니다. 로그인해주세요.");
+				mv.setViewName("redirect:/login");
+			}else{
+				mv.setViewName("redirect:/error");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
 			HttpClientUtils.closeQuietly(response);
 		}
-		if(statusCode == 200){
-			return "redirect:/login";
-		}else{
-			return "redirect:/error";
-		}
-		
+		return mv;
 	}
 	
 	//Member Update
@@ -120,43 +132,46 @@ public class MemberController {
  	}
 		
 	@RequestMapping(value="/member/update",method=RequestMethod.POST)
-	public String editMember(HttpServletRequest request){
+	public ModelAndView editMember(HttpServletRequest request){
+		ModelAndView mv = new ModelAndView();
 		HttpResponse response = null;
 		Map paramMap = new HashMap<>();
 		paramMap.put("userId", request.getParameter("userId"));
 		paramMap.put("pwd", request.getParameter("pwd"));
 		paramMap.put("name", request.getParameter("name"));
-		paramMap.put("auth",Integer.parseInt(request.getParameter("auth")));
-		int statusCode = 0;
 		
 		try {
 			HttpPut put = new HttpPut(serverUrl + "/member");
 			List<NameValuePair> nvps = memberService.convertParam(paramMap);
 			put.setEntity(new UrlEncodedFormEntity(nvps,"UTF-8"));
 			response = httpClient.execute(put);
-			statusCode = response.getStatusLine().getStatusCode();
+			ResponseMsg responseMsg = memberService.jsonToResponseMsg(EntityUtils.toString(response.getEntity()));
+			String resultMsg = responseMsg.getMsg();
+			
+			if(resultMsg.equals("SUCCESS")){
+				mv.addObject("msg", "회원 정보가 수정되었습니다. 다시 로그인해주세요.");
+				mv.setViewName("redirect:/login");
+			}else{
+				mv.setViewName("redirect:/error");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
 			HttpClientUtils.closeQuietly(response);
 		}
-		if(statusCode == 200){
-			return "redirect:/login";
-		}else{
-			return "redirect:/error";
-		}
+		return mv;
 	}
 	
 	//member delete
 	@RequestMapping(value="/member/delete",method=RequestMethod.GET)
-	public String deleteMember(HttpServletRequest request){
+	public ModelAndView deleteMember(HttpServletRequest request){
+		ModelAndView mv = new ModelAndView();
 		HttpResponse response = null;
 		Map paramMap = new HashMap<>();
 		paramMap.put("userId",  request.getParameter("userId"));
 		
 		HttpSession session = request.getSession();
 		Member member = (Member)session.getAttribute("member");
-		int statusCode = 0;
 		
 		if(member.getAuth() == 1){
 			try {
@@ -164,30 +179,33 @@ public class MemberController {
 				List<NameValuePair> nvps = memberService.convertParam(paramMap);
 				post.setEntity(new UrlEncodedFormEntity(nvps,"UTF-8"));
 				response = httpClient.execute(post);
-				statusCode = response.getStatusLine().getStatusCode();
+				ResponseMsg responseMsg = memberService.jsonToResponseMsg(EntityUtils.toString(response.getEntity()));
+				String resultMsg = responseMsg.getMsg();
+				
+				if(resultMsg.equals("SUCCESS")){
+					mv.setViewName("redirect:/member/memberList");
+				}else{
+					mv.setViewName("redirect:/error");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}finally {
 				HttpClientUtils.closeQuietly(response);
 			}
-			if(statusCode == 200){
-				return "redirect:/member/memberList";
-			}else{
-				return "redirect:/error";
-			}
 		}else{
-			return "redirect:/noAccess";
+			mv.setViewName("redirect:/noAccess");
 		}
+		return mv;
 		
 	}
 
 	@RequestMapping(value="/member/userAuth",method =RequestMethod.PUT)
-	public String updateUserAuth(HttpServletRequest request){
+	public ModelAndView updateUserAuth(HttpServletRequest request){
+		ModelAndView mv = new ModelAndView();
 		HttpResponse response = null;
 		Map paramMap = new HashMap<>();
 		paramMap.put("userId", request.getParameter("userId"));
 		paramMap.put("auth", Integer.parseInt(request.getParameter("auth")));
-		int statusCode = 0;
 		
 		HttpSession session = request.getSession();
 		Member member = (Member)session.getAttribute("member");
@@ -199,21 +217,22 @@ public class MemberController {
 				put.setEntity(new UrlEncodedFormEntity(nvps,"UTF-8"));
 				
 				response = httpClient.execute(put);
-				statusCode = response.getStatusLine().getStatusCode();
+				ResponseMsg responseMsg = memberService.jsonToResponseMsg(EntityUtils.toString(response.getEntity()));
+				String resultMsg = responseMsg.getMsg();
 				
+				if(resultMsg.equals("SUCCESS")){
+					mv.setViewName("redirect:/member/memberList");
+				}else{
+					mv.setViewName("redirect:/error");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}finally {
 				HttpClientUtils.closeQuietly(response);
 			}
-			
-			if(statusCode == 200){
-				return "redirect:/member/memberList";
-			}else{
-				return "redirect:/error";
-			}
 		}else{
-			return "redirect:/noAccess";
+			mv.setViewName("redirect:/noAccess");
 		}
+		return mv;
 	}
 }

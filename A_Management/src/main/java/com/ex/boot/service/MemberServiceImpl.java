@@ -10,16 +10,24 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.stereotype.Service;
 
 import com.ex.boot.vo.Member;
+import com.ex.boot.vo.ResponseMsg;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
-
+	private Gson gson =  new GsonBuilder().serializeNulls().create();
+	
+	@Override
+	public ResponseMsg jsonToResponseMsg(String json){
+		ResponseMsg responseMsg = gson.fromJson(json, ResponseMsg.class);
+        return responseMsg;
+	}
+	
 	@Override
 	public List<Member> jsonToMemberList(String json) {
-		Gson gson = new Gson();
-        List<Member> memberList = gson.fromJson(json, new TypeToken<List<Member>>(){}.getType());
+		List<Member> memberList = gson.fromJson(json, new TypeToken<List<Member>>(){}.getType());
         return memberList;
 	}
 	
@@ -34,4 +42,6 @@ public class MemberServiceImpl implements MemberService {
          
         return paramList;
 	}
+	
+	
 }

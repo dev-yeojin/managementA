@@ -39,6 +39,9 @@
 									<div class="form-group">
 										<input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="User Name" value="">
 									</div>
+									<div class="form-group" style="color: red;text-align: center;">
+										<h4>${registerMsg}</h4>
+									</div>
 									<div class="form-group">
 										<div class="row">
 											<div class="col-sm-6 col-sm-offset-3">

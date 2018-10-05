@@ -15,8 +15,10 @@ spring:
 # [Context 설정]
 server:
   port: 8080
-  contextPath: /
-  jsp-servlet:
-    init-parameters:
-      development: true
-
+  servlet:
+    context-path: /
+    jsp:
+      init-parameters:
+        development: true
+        
+        

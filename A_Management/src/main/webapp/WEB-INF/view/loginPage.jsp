@@ -39,6 +39,9 @@
 									<div class="form-group">
 										<input type="password" name="pwd" id="pwd" tabindex="2" class="form-control" placeholder="User password">
 									</div>
+									<div class="form-group" style="color: red;text-align: center;">
+										<h4>${msg}</h4>
+									</div>
 									<div class="form-group">
 										<div class="row">
 											<div class="col-sm-6 col-sm-offset-3">
@@ -46,6 +49,7 @@
 											</div>
 										</div>
 									</div>
+									
 								</form>
 								<form id="register-form" action="/member/create" method="POST" role="form" style="display: none;">
 									<div class="form-group">
@@ -57,9 +61,9 @@
 									<div class="form-group">
 										<input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="User Name" value="">
 									</div>
-									<div class="form-group">
+									<!-- <div class="form-group">
 										<input type="number" name="auth" id="auth" tabindex="1" class="form-control" placeholder="User Auth" value="">
-									</div>
+									</div> -->
 									<!-- <div class="form-group">
 										<input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
 									</div> -->

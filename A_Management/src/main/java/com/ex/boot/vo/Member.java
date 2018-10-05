@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class Member {
 
-	private int idx;
 	private String userId;
 	private String pwd;
 	private String name;
@@ -27,12 +26,6 @@ public class Member {
 		this.auth = auth;
 	}
 	
-	public int getIdx() {
-		return idx;
-	}
-	public void setIdx(int idx) {
-		this.idx = idx;
-	}
 	public String getUserId() {
 		return userId;
 	}
